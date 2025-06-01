@@ -16,6 +16,18 @@ const showCompleted = ref(false);
 
 const pendingTasks = computed(() => props.tasks.filter(t => !t.done));
 const completedTasks = computed(() => props.tasks.filter(t => t.done));
+
+
+const newTask = ref('');
+
+const addTask = () => {
+    if (newTask.value.trim()) {
+        emit('add', newTask.value);
+        newTask.value = '';
+    }
+}
+
+const emit = defineEmits(['add', 'remove']);
 </script>
 
 <template>
@@ -24,9 +36,39 @@ const completedTasks = computed(() => props.tasks.filter(t => t.done));
             My list
         </h2>
 
+        <form
+            class="flex flex-col gap-1 mb-3"
+            @submit.prevent="addTask"
+        >
+            <div class="flex items-center gap-2">
+                <input
+                    v-model="newTask"
+                    type="text"
+                    placeholder="New task"
+                    class="flex-1 rounded-xl border border-gray-300 px-2 py-1 text-sm focus:ring-blue-500 focus:border-blue-500"
+                    @keydown.enter.prevent="addTask"
+                />
+                <button
+                    type="submit"
+                    title="Add task"
+                    class="bg-blue-600 text-white px-1 py-1 rounded-2xl hover:bg-blue-700 transition flex items-center justify-center"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                </button>
+            </div>
+            <span
+                v-if="newTask"
+                class="text-xs text-gray-500 ml-1"
+            >
+                Press enter to save
+            </span>
+        </form>
+
         <ul
             role="list"
-            class="px-2 divide-y divide-gray-100 overflow-y-auto max-h-[68vh]"
+            class="px-2 divide-y divide-gray-100 overflow-y-auto max-h-[60vh]"
         >
             <li
                 v-for="task in pendingTasks"
