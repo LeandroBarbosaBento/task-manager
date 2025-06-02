@@ -5,6 +5,7 @@ use App\Http\Controllers\TaskListController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use App\Http\Controllers\TaskController;
 
 /*
 |--------------------------------------------------------------------------
@@ -30,8 +31,20 @@ Route::get('/', function () {
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', [TaskListController::class, 'index'])->name('dashboard');
 
-    Route::patch('/tasklist', [TaskListController::class, 'update'])->name('tasklist.update');
-    Route::delete('/tasklist', [TaskListController::class, 'destroy'])->name('tasklist.destroy');
+    Route::resource('tasklist', TaskListController::class)
+        ->only(['store', 'update', 'destroy'])
+        ->names([
+            'store' => 'tasklist.store',
+            'update' => 'tasklist.update',
+            'destroy' => 'tasklist.destroy',
+        ]);
+    Route::resource('task', TaskController::class)
+        ->only(['store', 'update', 'destroy'])
+        ->names([
+            'store' => 'task.store',
+            'update' => 'task.update',
+            'destroy' => 'task.destroy',
+        ]);
 });
 
 Route::middleware('auth')->group(function () {

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreTaskRequest;
 use App\Models\Task;
 use Illuminate\Http\Request;
 
@@ -26,9 +27,17 @@ class TaskController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreTaskRequest $request)
     {
-        //
+
+        $task = Task::create([
+            'title' => $request->title,
+            'task_list_id' => $request->task_list_id,
+            /* 'user_id' => auth()->id(), */
+        ]);
+
+        return to_route('dashboard')
+                ->with('success', 'Task created successfully.');
     }
 
     /**

@@ -1,4 +1,5 @@
 <script setup>
+import { useForm } from '@inertiajs/vue3';
 import { ref, computed } from 'vue';
 
 const props = defineProps({
@@ -10,31 +11,47 @@ const props = defineProps({
         type: Array,
         default: () => [],
     },
+    id: {
+        type: [Number, String],
+        default: null,
+    },
 });
 
 const showCompleted = ref(false);
+const dropdownOpen = ref(null);
 
 const pendingTasks = computed(() => props.tasks.filter(t => !t.done));
 const completedTasks = computed(() => props.tasks.filter(t => t.done));
 
-
-const newTask = ref('');
+const form = useForm({
+    newTask: '',
+});
 
 const addTask = () => {
-    if (newTask.value.trim()) {
-        emit('add', newTask.value);
-        newTask.value = '';
+    if (form.newTask.trim()) {
+        form
+            .transform(() => ({
+                title: form.newTask.trim(),
+                task_list_id: props.id,
+            }))
+            .post(route('task.store'), {
+                onSuccess: () => form.reset('newTask'),
+            });
     }
-}
-
+};
 const emit = defineEmits(['add', 'remove']);
+
+const teste = () => {
+    console.log('teste');
+    console.log(props.tasks);
+}
 </script>
 
 <template>
     <div class="inline-block max-w-sm min-w-[20rem] bg-white rounded-lg p-2 px-4 m-2 border border-gray-200 max-h-[75vh]">
-        <h2 class="text-md font-medium text-blue-600 my-2">
+        <h3 class="text-md font-medium text-blue-600 my-2" @click="teste">
             {{ title }}
-        </h2>
+        </h3>
 
         <form
             class="flex flex-col gap-1 mb-3"
@@ -42,7 +59,7 @@ const emit = defineEmits(['add', 'remove']);
         >
             <div class="flex items-center gap-2">
                 <input
-                    v-model="newTask"
+                    v-model="form.newTask"
                     type="text"
                     placeholder="New task"
                     class="flex-1 rounded-xl border border-gray-300 px-2 py-1 text-sm focus:ring-blue-500 focus:border-blue-500"
@@ -52,6 +69,7 @@ const emit = defineEmits(['add', 'remove']);
                     type="submit"
                     title="Add task"
                     class="bg-blue-600 text-white px-1 py-1 rounded-2xl hover:bg-blue-700 transition flex items-center justify-center"
+                    :disabled="form.processing"
                 >
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
@@ -59,10 +77,13 @@ const emit = defineEmits(['add', 'remove']);
                 </button>
             </div>
             <span
-                v-if="newTask"
+                v-if="form.newTask"
                 class="text-xs text-gray-500 ml-1"
             >
                 Press enter to save
+            </span>
+            <span v-if="form.errors.newTask" class="text-xs text-red-600 ml-1">
+                {{ form.errors.newTask }}
             </span>
         </form>
 
@@ -90,17 +111,37 @@ const emit = defineEmits(['add', 'remove']);
                             {{ task.title }}
                         </label>
                     </div>
-                    <button
-                        class="ml-2 text-gray-400 hover:text-red-600 transition"
-                        title="Remove task"
-                        @click="$emit('remove', task)"
-                        type="button"
-                    >
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </button>
+                    <div class="relative dropdown-menu">
+                        <button
+                            class="ml-2 text-gray-400 hover:text-blue-600 transition rotate-90"
+                            title="Task options"
+                            @click.stop="dropdownOpen = dropdownOpen === task.id ? null : task.id"
+                            type="button"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <circle cx="12" cy="12" r="2" />
+                                <circle cx="19" cy="12" r="2" />
+                                <circle cx="5" cy="12" r="2" />
+                            </svg>
+                        </button>
+                        <div
+                            v-if="dropdownOpen === task.id"
+                            class="absolute right-0 z-10 mt-2 w-28 rounded-md bg-white shadow-lg ring-1 ring-black/5 py-1"
+                        >
+                            <button
+                                class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                @click="$emit('edit', task); dropdownOpen = null"
+                            >
+                                Edit
+                            </button>
+                            <button
+                                class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
+                                @click="$emit('remove', task); dropdownOpen = null"
+                            >
+                                Remove
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </li>
 
@@ -134,6 +175,8 @@ const emit = defineEmits(['add', 'remove']);
                                     type="checkbox"
                                     :id="'task-' + task.id"
                                     v-model="task.done"
+                                    :true-value="1"
+                                    :false-value="0"
                                     class="h-5 w-5 rounded-xl border-gray-300 text-blue-400 focus:ring-blue-500"
                                 />
                                 <label

@@ -22,8 +22,8 @@ class StoreTaskRequest extends FormRequest
     public function rules(): array
     {
         return [
-             'title' => 'required',
-             'task_list_id' => 'required|exists:task_lists,id',
+            'title' => 'required|string|max:255',
+            'task_list_id' => 'required|exists:task_lists,id',
         ];
     }
 

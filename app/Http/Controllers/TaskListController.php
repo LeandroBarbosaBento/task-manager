@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreTaskListRequest;
 use App\Models\TaskList;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -36,9 +37,15 @@ class TaskListController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreTaskListRequest $request)
     {
-        //
+        TaskList::create([
+            'user_id' => auth()->id(),
+            'title' => $request->input('title'),
+        ]);
+
+        return to_route('dashboard')
+                ->with('success', 'Task list created successfully.');
     }
 
     /**
