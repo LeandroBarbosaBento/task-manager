@@ -33,7 +33,7 @@ class TaskController extends Controller
         $task = Task::create([
             'title' => $request->title,
             'task_list_id' => $request->task_list_id,
-            /* 'user_id' => auth()->id(), */
+            'user_id' => auth()->id(),
         ]);
 
         return to_route('dashboard')

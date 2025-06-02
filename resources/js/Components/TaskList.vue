@@ -35,7 +35,10 @@ const addTask = () => {
                 task_list_id: props.id,
             }))
             .post(route('task.store'), {
-                onSuccess: () => form.reset('newTask'),
+                onSuccess: () => {
+                    form.reset();
+                    form.clearErrors();
+                },
             });
     }
 };
@@ -85,6 +88,7 @@ const teste = () => {
             <span v-if="form.errors.newTask" class="text-xs text-red-600 ml-1">
                 {{ form.errors.newTask }}
             </span>
+            <span v-if="form.errors.title" class="text-xs text-red-600">{{ form.errors.title }}</span>
         </form>
 
         <ul
