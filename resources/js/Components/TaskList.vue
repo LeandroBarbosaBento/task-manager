@@ -1,5 +1,5 @@
 <script setup>
-import { useForm } from '@inertiajs/vue3';
+import { useForm, router } from '@inertiajs/vue3';
 import { ref, computed } from 'vue';
 
 const props = defineProps({
@@ -42,6 +42,12 @@ const addTask = () => {
             });
     }
 };
+
+const onRemoveTask = (task) => {
+    router.delete(route('task.destroy', task.id));
+    dropdownOpen.value = null;
+};
+
 const emit = defineEmits(['add', 'remove']);
 
 const teste = () => {
@@ -140,7 +146,7 @@ const teste = () => {
                             </button>
                             <button
                                 class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
-                                @click="$emit('remove', task); dropdownOpen = null"
+                                @click="onRemoveTask(task)"
                             >
                                 Remove
                             </button>
