@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreTaskRequest;
+use App\Http\Requests\UpdateTaskRequest;
 use App\Models\Task;
 use Illuminate\Http\Request;
 
@@ -59,9 +60,15 @@ class TaskController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Task $task)
+    public function update(UpdateTaskRequest $request, Task $task)
     {
-        //
+        $task->update([
+            'title' => $request->title,
+            'completed' => $request->completed ? 1 : 0,
+        ]);
+
+        return to_route('dashboard')
+                ->with('success', 'Task updated successfully.');
     }
 
     /**

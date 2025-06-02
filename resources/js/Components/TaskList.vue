@@ -1,6 +1,7 @@
 <script setup>
 import { useForm, router } from '@inertiajs/vue3';
 import { ref, computed } from 'vue';
+import EditTaskModal from './Task/EditTaskModal.vue';
 
 const props = defineProps({
     title: {
@@ -19,6 +20,9 @@ const props = defineProps({
 
 const showCompleted = ref(false);
 const dropdownOpen = ref(null);
+
+const selectedTask = ref(null);
+const isEditTaskModalOpen = ref(false);
 
 const pendingTasks = computed(() => props.tasks.filter(t => !t.done));
 const completedTasks = computed(() => props.tasks.filter(t => t.done));
@@ -48,6 +52,12 @@ const onRemoveTask = (task) => {
     dropdownOpen.value = null;
 };
 
+const onEditClick = (task) => {
+    selectedTask.value = task;
+    isEditTaskModalOpen.value = true;
+    dropdownOpen.value = null;
+};
+
 const emit = defineEmits(['add', 'remove']);
 
 const teste = () => {
@@ -57,6 +67,11 @@ const teste = () => {
 </script>
 
 <template>
+    <EditTaskModal
+        :isOpen="isEditTaskModalOpen"
+        :task="selectedTask"
+        @close="isEditTaskModalOpen = false"
+    />
     <div class="inline-block max-w-sm min-w-[20rem] bg-white rounded-lg p-2 px-4 m-2 border border-gray-200 max-h-[75vh]">
         <h3 class="text-md font-medium text-blue-600 my-2" @click="teste">
             {{ title }}
@@ -140,7 +155,7 @@ const teste = () => {
                         >
                             <button
                                 class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                                @click="$emit('edit', task); dropdownOpen = null"
+                                @click="onEditClick(task)"
                             >
                                 Edit
                             </button>
