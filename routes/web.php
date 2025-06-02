@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\TaskListController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -25,9 +26,13 @@ Route::get('/', function () {
     ]);
 })->name('welcome');
 
-Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/dashboard', [TaskListController::class, 'index'])->name('dashboard');
+
+    Route::patch('/tasklist', [TaskListController::class, 'update'])->name('tasklist.update');
+    Route::delete('/tasklist', [TaskListController::class, 'destroy'])->name('tasklist.destroy');
+});
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

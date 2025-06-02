@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\TaskList;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class TaskListController extends Controller
 {
@@ -12,7 +13,16 @@ class TaskListController extends Controller
      */
     public function index()
     {
-        //
+        $taskLists = TaskList::where('user_id', auth()->id())
+            ->with(['tasks' => function ($query) {
+                $query->orderBy('created_at', 'desc');
+            }])
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return Inertia::render('Dashboard', [
+            'taskLists' => $taskLists
+        ]);
     }
 
     /**

@@ -33,7 +33,7 @@ const emit = defineEmits(['add', 'remove']);
 <template>
     <div class="inline-block max-w-sm min-w-[20rem] bg-white rounded-lg p-2 px-4 m-2 border border-gray-200 max-h-[75vh]">
         <h2 class="text-md font-medium text-blue-600 my-2">
-            My list
+            {{ title }}
         </h2>
 
         <form
@@ -68,12 +68,12 @@ const emit = defineEmits(['add', 'remove']);
 
         <ul
             role="list"
-            class="px-2 divide-y divide-gray-100 overflow-y-auto max-h-[60vh]"
+            class="divide-y divide-gray-100 overflow-y-auto max-h-[60vh]"
         >
             <li
                 v-for="task in pendingTasks"
                 :key="task.id"
-                class="flex items-center justify-between gap-x-6 py-3 whitespace-normal"
+                class="flex items-center justify-between gap-x-6 py-3 px-2 rounded whitespace-normal hover:bg-gray-100 transition"
             >
                 <div class="flex justify-between w-full">
                     <div class="flex items-center gap-x-3">
@@ -87,7 +87,7 @@ const emit = defineEmits(['add', 'remove']);
                             :for="'task-' + task.id"
                             class="text-sm font-medium text-gray-700"
                         >
-                            {{ task.description }}
+                            {{ task.title }}
                         </label>
                     </div>
                     <button
@@ -140,7 +140,7 @@ const emit = defineEmits(['add', 'remove']);
                                     :for="'task-' + task.id"
                                     class="text-sm font-medium text-gray-400 line-through"
                                 >
-                                    {{ task.description }}
+                                    {{ task.title }}
                                 </label>
                             </div>
                             <button
