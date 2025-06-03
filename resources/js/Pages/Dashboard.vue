@@ -52,7 +52,7 @@ const onTaskListCreated = () => {
 
         </template>
 
-        <div class="flex py-2 overflow-x-auto scrollbar-none whitespace-nowrap">
+        <div class="flex py-2 overflow-x-auto scrollbar-none whitespace-nowrap h-[calc(100vh-155px)]">
             <TaskList
                 v-for="taskList in taskLists"
                 :key="taskList.id"
