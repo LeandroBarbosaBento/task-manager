@@ -58,12 +58,15 @@ const onEditClick = (task) => {
     dropdownOpen.value = null;
 };
 
+const onChangeDone = (task, done) => {
+    task.done = done;
+    router.put(route('task.update', task.id),{
+        completed: done,
+    });
+};
+
 const emit = defineEmits(['add', 'remove']);
 
-const teste = () => {
-    console.log('teste');
-    console.log(props.tasks);
-}
 </script>
 
 <template>
@@ -73,7 +76,7 @@ const teste = () => {
         @close="isEditTaskModalOpen = false"
     />
     <div class="inline-block max-w-sm min-w-[20rem] bg-white rounded-lg p-2 px-4 m-2 border border-gray-200 max-h-[75vh]">
-        <h3 class="text-md font-medium text-blue-600 my-2" @click="teste">
+        <h3 class="text-md font-medium text-blue-600 my-2">
             {{ title }}
         </h3>
 
@@ -128,6 +131,7 @@ const teste = () => {
                             :id="'task-' + task.id"
                             v-model="task.done"
                             class="h-5 w-5 rounded-xl border-gray-300 text-blue-600 focus:ring-blue-500"
+                            @click="onChangeDone(task, 1)"
                         />
                         <label
                             :for="'task-' + task.id"
@@ -203,6 +207,7 @@ const teste = () => {
                                     :true-value="1"
                                     :false-value="0"
                                     class="h-5 w-5 rounded-xl border-gray-300 text-blue-400 focus:ring-blue-500"
+                                    @click="onChangeDone(task, 0)"
                                 />
                                 <label
                                     :for="'task-' + task.id"

@@ -6,6 +6,7 @@ use App\Http\Requests\StoreTaskRequest;
 use App\Http\Requests\UpdateTaskRequest;
 use App\Models\Task;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class TaskController extends Controller
 {
@@ -62,10 +63,18 @@ class TaskController extends Controller
      */
     public function update(UpdateTaskRequest $request, Task $task)
     {
-        $task->update([
-            'title' => $request->title,
-            'completed' => $request->completed ? 1 : 0,
-        ]);
+        $updatedData = [];
+
+        if($request->title) {
+            $updatedData['title'] = $request->title;
+        }
+
+        if(isset($request->completed)) {
+
+            $updatedData['done'] = $request->completed;
+        }
+
+        $task->update($updatedData);
 
         return to_route('dashboard')
                 ->with('success', 'Task updated successfully.');

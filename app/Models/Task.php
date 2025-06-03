@@ -15,6 +15,7 @@ class Task extends Model
         'user_id',
         'task_list_id',
         'title',
+        'done'
     ];
 
     public function taskList(): BelongsTo
